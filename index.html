@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>তাজা সবজি বাজার - Vegetable Shop</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f9f4;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background-color: #27ae60;
+            color: #fff;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 22px;
+        }
+
+        .cart-icon {
+            background: #219150;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Container & Layout */
+        .container {
+            display: flex;
+            padding: 20px 5%;
+            gap: 20px;
+        }
+
+        .product-grid {
+            flex: 3;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* Card */
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #e1ebe1;
+        }
+
+        .card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .card h3 {
+            margin: 10px 0 5px;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        .card .price {
+            color: #27ae60;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .card button {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .card button:hover {
+            background-color: #1e8449;
+        }
+
+        /* Cart Section */
+        .cart-section {
+            flex: 1;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            height: fit-content;
+            border: 1px solid #e1ebe1;
+        }
+
+        .cart-section h2 {
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f4f9f4;
+            padding-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .cart-item button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .total-price {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            color: #2c3e50;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .checkout-btn:hover {
+            background: #d35400;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>🥦 তাজা সবজি বাজার</h1>
+        <div class="cart-icon">🛒 কার্ট: <span id="cart-count">0</span> টি</div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Product Grid -->
+        <div class="product-grid" id="product-list">
+            <!-- Vegetables will be loaded here -->
+        </div>
+
+        <!-- Cart Sidebar -->
+        <div class="cart-section">
+            <h2>আপনার সবজির ঝুড়ি</h2>
+            <div id="cart-items">
+                <p>ঝুড়ি খালি রয়েছে।</p>
+            </div>
+            <div class="total-price">
+                মোট দাম: <span id="total-amount">0</span> ৳
+            </div>
+            <button class="checkout-btn" onclick="checkout()">অর্ডার কনফার্ম করুন</button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // সবজি পণ্যের লিস্ট
+        const vegetables = [
+            { id: 1, name: 'তাজা লাল টমেটো (১ কেজি)', price: 60, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400' },
+            { id: 2, name: 'দেশি আলু (১ কেজি)', price: 40, image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400' },
+            { id: 3, name: 'গোল বেগুন (১ কেজি)', price: 70, image: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=400' },
+            { id: 4, name: 'তাজা গাজর (১ কেজি)', price: 80, image: 'https://images.unsplash.com/photo-1598170845058-12ef4a457939?w=400' },
+            { id: 5, name: 'কাঁচা মরিচ (২৫০ গ্রাম)', price: 30, image: 'https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=400' },
+            { id: 6, name: 'সবুজ শসা (১ কেজি)', price: 50, image: 'https://images.unsplash.com/photo-1604977042946-1eecc30f269e?w=400' }
+        ];
+
+        let cart = [];
+
+        // সবজিগুলো স্ক্রিনে দেখানোর ফাংশন
+        function displayVegetables() {
+            const productList = document.getElementById('product-list');
+            productList.innerHTML = '';
+
+            vegetables.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <h3>${item.name}</h3>
+                    <div class="price">${item.price} ৳</div>
+                    <button onclick="addToCart(${item.id})">ঝুড়িতে রাখুন</button>
+                `;
+                productList.appendChild(card);
+            });
+        }
+
+        // কার্টে সবজি যোগ করা
+        function addToCart(id) {
+            const item = vegetables.find(veg => veg.id === id);
+            const existing = cart.find(c => c.id === id);
+
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...item, quantity: 1 });
+            }
+            updateCart();
+        }
+
+        // কার্ট থেকে সবজি বাদ দেওয়া
+        function removeFromCart(id) {
+            cart = cart.filter(c => c.id !== id);
+            updateCart();
+        }
+
+        // কার্ট ইন্টারফেস আপডেট
+        function updateCart() {
+            const cartContainer = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const totalAmount = document.getElementById('total-amount');
+
+            cartContainer.innerHTML = '';
+            let total = 0;
+            let count = 0;
+
+            if (cart.length === 0) {
+                cartContainer.innerHTML = '<p>ঝুড়ি খালি রয়েছে।</p>';
+            } else {
+                cart.forEach(item => {
+                    total += item.price * item.quantity;
+                    count += item.quantity;
+
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.innerHTML = `
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            ${item.price} ৳ x ${item.quantity}
+                        </div>
+                        <button onclick="removeFromCart(${item.id})">সরিয়ে ফেলুন</button>
+                    `;
+                    cartContainer.appendChild(cartItem);
+                });
+            }
+
+            cartCount.innerText = count;
+            totalAmount.innerText = total;
+        }
+
+        // অর্ডার মেসেজ
+        function checkout() {
+            if (cart.length === 0) {
+                alert("আপনার ঝুড়ি খালি! কিছু সবজি যোগ করুন।");
+            } else {
+                alert("ধন্যবাদ! আপনার সবজির অর্ডারটি সফলভাবে নেওয়া হয়েছে।");
+                cart = [];
+                updateCart();
+            }
+        }
+
+        displayVegetables();
+    </script>
+</body>
+</html>
